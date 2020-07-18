@@ -1,0 +1,9 @@
+.container {
+	width: 1175px;
+	margin: auto;
+	max-width: 90%;
+	&__fluid {
+		width: 100%;
+		max-width: 100%;
+	}
+}

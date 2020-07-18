@@ -1,0 +1,35 @@
+.container {
+  width: 1175px;
+  margin: auto;
+  max-width: 90%;
+  &__fluid {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+.logo {
+  height: 50px;
+  margin: 16px;
+}
+.ant-layout-sider {
+  max-width: 250px !important;
+  width: 250px !important;
+}
+.ant-layout-sider-trigger {
+  width: 250px !important;
+}
+.logout--btn {
+  border: none;
+  float: right;
+  background: white;
+  cursor: pointer;
+}
+.ant-layout-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  > div {
+    margin-left: auto;
+    margin-right: 20px;
+  }
+}

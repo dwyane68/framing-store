@@ -18,21 +18,31 @@ type HomeProps = {
 }
 
 let cropper: Cropper;
-let cData: Cropper.Data;
+let initialData: Cropper.Data;
 let tmpSrc: any;
 
   
 const Home = () => {
-
-    const [loading, setLoading] = useState(false);
+    
     const [style, setStyle] = useState({height: 400, width: 500});
-    const [initialAspectRatio, setAscpectRatio] = useState(4/4);
     const [containerStyle, setContainerStyle] = useState({ maxHeight: "80vh", borderRadius: "10px" });
     const [guides, setGuides] = useState(false);
-    const [data, setData] = useState(cData);
+    const [data, setData] = useState(initialData);
     const [fileSrc, setFileSrc] = useState(tmpSrc);
     const [rotate, setRotate] = useState(0);
+    const [zoom, setZoom] = useState(0);
+    const [reset, setReset] = useState(false);
     // const [style, setStyle] = useState({height: 400, width: 500});
+
+    initialData = {
+        x: 200,
+        y: 200,
+        width: 500,
+        height: 500,
+        rotate: rotate,
+        scaleX: 1,
+        scaleY: 1,
+    }
 
     const _crop = (e: any) => {
         
@@ -46,6 +56,15 @@ const Home = () => {
         
     }   
     
+    const onReady = (e: any) => {
+        setReset(false);
+        setData(initialData);
+    }
+
+    const onReset = () => {
+        setReset(true);
+    }
+    
     const cropperProps = { // make sure all required component's inputs/Props keys&types match
         src: fileSrc,
         style,
@@ -55,6 +74,7 @@ const Home = () => {
         containerStyle,
         rotatable: true,
         data,
+        zoomTo: zoom,
     };
 
     const beforeUpload = (file: File) => {
@@ -66,18 +86,6 @@ const Home = () => {
             
         };
         return false;
-    }
-    
-    const onReady = (e: any) => {
-        setData({
-            x: 100,
-            y: 100,
-            width: 500,
-            height: 500,
-            rotate: rotate,
-            scaleX: 1,
-            scaleY: 1,
-        });
     }
 
     const handleUpdate = () => {
@@ -132,19 +140,19 @@ const Home = () => {
                                 </Tooltip>
                                 <Tooltip title="ZoomIn">
                                     <Button icon={<ZoomInOutlined/>} onClick={() => {
-                                        // setRotate(rotate + 90);
-                                        // handleUpdate()
+                                        setZoom(zoom + 0.1);
+                                        handleUpdate();
                                     }}/>
                                 </Tooltip>
                                 <Tooltip title="ZoomOut">
                                     <Button icon={<ZoomOutOutlined/>} onClick={() => {
-                                        // setRotate(rotate + 90);
-                                        // handleUpdate()
+                                        setZoom(zoom - 0.1);
+                                        handleUpdate();
                                     }}/>
                                 </Tooltip>
                                 <Tooltip title="Reset">
                                     <Button icon={<ClearOutlined/>} onClick={() => {
-                                        // setRotate(rotate + 90);
+                                        onReset();
                                         // handleUpdate()
                                     }}/>
                                 </Tooltip>

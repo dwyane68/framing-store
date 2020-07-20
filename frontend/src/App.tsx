@@ -7,7 +7,7 @@ import CustomLayout from "./components/CustomLayout";
 function App() {
   return (
 
-      <BrowserRouter basename={"/admin"}>
+      <BrowserRouter basename={"/"}>
         <Switch>
           {/*<Route path="/login" component={Login} />*/}
           <Route  path="/" component={CustomLayout} />

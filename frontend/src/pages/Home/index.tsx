@@ -1,11 +1,12 @@
 import PropTypes from "prop-types";
 // import style from "./styles.scss";
-import React, { Component, useState, useEffect } from "react";
+import React, { Component, useState, useEffect, useRef } from "react";
 import { Timeline, Skeleton, Card, Affix, Upload, Button, message, Row, Col, Tooltip } from "antd";
 import { UploadOutlined, RotateLeftOutlined, RotateRightOutlined, ZoomInOutlined, ZoomOutOutlined , ClearOutlined } from '@ant-design/icons';
 import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 import src from "*.bmp";
+import Meta from "antd/lib/card/Meta";
 
 const limit = 10;
 const start = 0;
@@ -17,21 +18,20 @@ type HomeProps = {
     loading: boolean
 }
 
-let cropper: Cropper;
 let initialData: Cropper.Data;
 let tmpSrc: any;
+let placeholder: any;
+placeholder = 'https://via.placeholder.com/500';
 
   
 const Home = () => {
-    
-    const [style, setStyle] = useState({height: 400, width: 500});
-    const [containerStyle, setContainerStyle] = useState({ maxHeight: "80vh", borderRadius: "10px" });
-    const [guides, setGuides] = useState(false);
+    // const [style, setStyle] = useState({height: 400, width: 500});
     const [data, setData] = useState(initialData);
     const [fileSrc, setFileSrc] = useState(tmpSrc);
+    const [croppedImage, setCroppedImage] = useState(placeholder);
     const [rotate, setRotate] = useState(0);
-    const [zoom, setZoom] = useState(0);
-    const [reset, setReset] = useState(false);
+    const [zoom, setZoom] = useState(0.2);
+    const [cropper, setCropper] = useState<Cropper>();
     // const [style, setStyle] = useState({height: 400, width: 500});
 
     initialData = {
@@ -39,41 +39,44 @@ const Home = () => {
         y: 200,
         width: 500,
         height: 500,
-        rotate: rotate,
+        rotate: 0,
         scaleX: 1,
         scaleY: 1,
     }
 
     const _crop = (e: any) => {
-        
         // console.log(e);
+        
         // // image in dataUrl
         // console.log(cropper && cropper.getCroppedCanvas().toDataURL());
     }
 
     const _afterCrop = (e: any) => {
-        console.log(e);
+        // console.log(e);
         
-    }   
-    
-    const onReady = (e: any) => {
-        setReset(false);
-        setData(initialData);
     }
 
+    const getCropData = () => {
+        
+        if (typeof cropper !== 'undefined') {
+            setCroppedImage(cropper.getCroppedCanvas().toDataURL());
+        }
+    };
+
     const onReset = () => {
-        setReset(true);
+        
+        if (typeof cropper !== 'undefined') {
+            cropper.reset();
+            setZoom(0.2);
+        }
     }
     
     const cropperProps = { // make sure all required component's inputs/Props keys&types match
         src: fileSrc,
-        style,
+        // style,
         initialAspectRatio: 4/4,
-        guides,
         crop: _crop,
-        containerStyle,
         rotatable: true,
-        data,
         zoomTo: zoom,
     };
 
@@ -86,6 +89,35 @@ const Home = () => {
             
         };
         return false;
+    }
+
+    const updateZoom = (val: number) => {
+        let zm = zoom;
+        zm = zoom + val;
+        setZoom(zm);
+        
+        if (typeof cropper !== 'undefined') {
+            cropper.zoomTo(zm);
+        }
+    }
+
+    const updateRotate = (val: number) => {
+        let rt = rotate;
+        rt = rotate + val;
+        setRotate(rt);
+        
+        if (typeof cropper !== 'undefined') {
+            cropper.rotateTo(rt);
+        }
+    }
+
+    const publish = () => {
+        if(croppedImage === placeholder) {
+            message.error("Please generate preview before publishing.")
+        } else {
+            console.log(croppedImage);
+            message.loading("You will be redirected once the image is processed.");
+        }
     }
 
     const handleUpdate = () => {
@@ -112,50 +144,61 @@ const Home = () => {
                 )
             }
             
-            {
+            {   
                 fileSrc && (
                     <Row>
-                        <Col>
-                            <Cropper
-                                width={'50%'}
-                                {...cropperProps}
-                                ready={onReady}
-                                dragMode={"move"}
-                                cropend={_afterCrop}
-                            />
-                        </Col>
-                        <Col>
+                        <Col span={12}>
                             <Card>
-                                <Tooltip title="Rotate Left">
-                                    <Button icon={<RotateLeftOutlined/>} onClick={() => {
-                                        setRotate(rotate + 90);
-                                        handleUpdate()
-                                    }}/>
-                                </Tooltip>
-                                <Tooltip title="Rotate Right">
-                                    <Button icon={<RotateRightOutlined/>} onClick={() => {
-                                        setRotate(rotate + 90);
-                                        handleUpdate()
-                                    }}/>
-                                </Tooltip>
-                                <Tooltip title="ZoomIn">
-                                    <Button icon={<ZoomInOutlined/>} onClick={() => {
-                                        setZoom(zoom + 0.1);
-                                        handleUpdate();
-                                    }}/>
-                                </Tooltip>
-                                <Tooltip title="ZoomOut">
-                                    <Button icon={<ZoomOutOutlined/>} onClick={() => {
-                                        setZoom(zoom - 0.1);
-                                        handleUpdate();
-                                    }}/>
-                                </Tooltip>
-                                <Tooltip title="Reset">
-                                    <Button icon={<ClearOutlined/>} onClick={() => {
-                                        onReset();
-                                        // handleUpdate()
-                                    }}/>
-                                </Tooltip>
+                                <Cropper
+                                    {...cropperProps}
+                                    dragMode={"move"}
+                                    onInitialized={(instance) => {
+                                        setCropper(instance);
+                                        setZoom(0.2);
+                                    
+                                        instance.setData(initialData);
+                                    }}
+                                />
+                                <div>
+                                    <Tooltip title="Rotate Left">
+                                        <Button icon={<RotateLeftOutlined/>} onClick={() => {
+                                            updateRotate(-90);
+                                        }}/>
+                                    </Tooltip>
+                                    <Tooltip title="Rotate Right">
+                                        <Button icon={<RotateRightOutlined/>} onClick={() => {
+                                            updateRotate(90);
+                                        }}/>
+                                    </Tooltip>
+                                    <Tooltip title="ZoomIn">
+                                        <Button icon={<ZoomInOutlined/>} onClick={() => {
+                                            updateZoom(0.1)
+                                        }}/>
+                                    </Tooltip>
+                                    <Tooltip title="ZoomOut">
+                                        <Button icon={<ZoomOutOutlined/>} onClick={() => {
+                                            updateZoom(-0.1)
+                                        }}/>
+                                    </Tooltip>
+                                    <Tooltip title="Reset">
+                                        <Button icon={<ClearOutlined/>} onClick={() => {
+                                            onReset();
+                                        }}/>
+                                    </Tooltip>
+                                    <Button onClick={() => getCropData()}>Preview</Button>
+                                    <Button onClick={() => publish()}>Publish</Button>
+                                </div>
+                            </Card>
+                            
+                        </Col>
+
+                        <Col span={12}>
+                            <Card
+                                hoverable
+                                style={{ marginLeft: 20, background: 'transparent', height: 'fit-content'  }}
+                                cover={<img alt="example" src={croppedImage} />}
+                            >
+                                <Meta title="Preview"></Meta>
                             </Card>
                         </Col>
                     </Row>

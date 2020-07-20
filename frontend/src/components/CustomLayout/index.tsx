@@ -4,6 +4,7 @@ import { Switch, Route, Link } from 'react-router-dom';
 import { Layout, Menu, Card, message } from 'antd';
 
 import Home from '../../pages/Home';
+// import Home from '../../pages/Demo';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;

@@ -15,14 +15,16 @@ export default ({ app }: { app: express.Application }) => {
   });
 
   app.get('/preview/:fileName', (req, res) => {
-    let fileName = req.params.fileName;
+    res.header("Access-Control-Allow-Origin", "*");
+    const fileName = req.params.fileName;
     return res.sendFile(path.join(__dirname, '..', 'public', fileName))
   });
 
   app.enable('trust proxy');
   app.use(cors());
   app.use(fileupload());
-  app.use(bodyParser.json());
+  app.use(bodyParser.json({limit: '50mb'}));
+  app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
   // Load API routes
   app.use(config.api.prefix, routes());

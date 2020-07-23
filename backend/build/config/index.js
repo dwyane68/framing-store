@@ -13,7 +13,7 @@ if (envFound.error) {
 exports.default = {
     port: parseInt(process.env.PORT, 10),
     logs: {
-        level: process.env.LOG_LEVEL || 'silly',
+        level: process.env.LOG_LEVEL || 'debug',
     },
     /**
      * API configs

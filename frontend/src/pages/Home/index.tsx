@@ -1,11 +1,14 @@
 import PropTypes from "prop-types";
-// import style from "./styles.scss";
+import  "./styles.scss";
 import React, { Component, useState, useEffect, useRef } from "react";
 import { Timeline, Skeleton, Card, Affix, Upload, Button, message, Row, Col, Tooltip } from "antd";
 import { UploadOutlined, RotateLeftOutlined, RotateRightOutlined, ZoomInOutlined, ZoomOutOutlined , ClearOutlined } from '@ant-design/icons';
 import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
+import DownloadModal from '../../components/DownloadModal';
+import demoImage from '../../images/demo.png';
 import src from "*.bmp";
+import {publishImage} from '../../services'
 import Meta from "antd/lib/card/Meta";
 
 const limit = 10;
@@ -22,38 +25,24 @@ let initialData: Cropper.Data;
 let tmpSrc: any;
 let placeholder: any;
 placeholder = 'https://via.placeholder.com/500';
-
   
 const Home = () => {
-    // const [style, setStyle] = useState({height: 400, width: 500});
     const [data, setData] = useState(initialData);
     const [fileSrc, setFileSrc] = useState(tmpSrc);
     const [croppedImage, setCroppedImage] = useState(placeholder);
     const [rotate, setRotate] = useState(0);
     const [zoom, setZoom] = useState(0.2);
     const [cropper, setCropper] = useState<Cropper>();
-    // const [style, setStyle] = useState({height: 400, width: 500});
+    const [downloadImageUrl, setDownloadImageUrl] = useState('');
 
     initialData = {
         x: 200,
         y: 200,
         width: 500,
-        height: 500,
+        height: 600,
         rotate: 0,
         scaleX: 1,
         scaleY: 1,
-    }
-
-    const _crop = (e: any) => {
-        // console.log(e);
-        
-        // // image in dataUrl
-        // console.log(cropper && cropper.getCroppedCanvas().toDataURL());
-    }
-
-    const _afterCrop = (e: any) => {
-        // console.log(e);
-        
     }
 
     const getCropData = () => {
@@ -75,7 +64,6 @@ const Home = () => {
         src: fileSrc,
         // style,
         initialAspectRatio: 4/4,
-        crop: _crop,
         rotatable: true,
         zoomTo: zoom,
     };
@@ -115,8 +103,17 @@ const Home = () => {
         if(croppedImage === placeholder) {
             message.error("Please generate preview before publishing.")
         } else {
-            console.log(croppedImage);
-            message.loading("You will be redirected once the image is processed.");
+            // console.log(croppedImage);
+            message.loading("please wait while the image is being processed.", () => {
+                publishImage({
+                    file: croppedImage
+                }, (resp: any) => {
+                    setDownloadImageUrl(resp.previewUrl)
+                }, () => {
+                    message.error('Error uploading image')
+                })
+            })
+            
         }
     }
 
@@ -125,7 +122,7 @@ const Home = () => {
             x: 100,
             y: 100,
             width: 500,
-            height: 500,
+            height: 600,
             rotate: rotate,
             scaleX: 1,
             scaleY: 1,
@@ -136,11 +133,20 @@ const Home = () => {
         <div>
             {
                 !fileSrc && (
-                    <Upload beforeUpload={beforeUpload} >
+                    <>
+                        <Card
+                            hoverable
+                            style={{ width:600, height: 600, margin: 'auto' }}
+                            cover={<img alt="example" src={demoImage} style={{height: '-webkit-fill-available'}}/>}
+                        >
+                        </Card>
+                        <Upload beforeUpload={beforeUpload}>
                         <Button>
-                        <UploadOutlined /> Click to Upload
+                            <UploadOutlined /> Click to Upload
                         </Button>
                     </Upload>
+                    </>
+                    
                 )
             }
             
@@ -148,18 +154,17 @@ const Home = () => {
                 fileSrc && (
                     <Row>
                         <Col span={12}>
-                            <Card>
+                            <Card style={{height: '50%'}}>
                                 <Cropper
                                     {...cropperProps}
                                     dragMode={"move"}
                                     onInitialized={(instance) => {
                                         setCropper(instance);
                                         setZoom(0.2);
-                                    
                                         instance.setData(initialData);
                                     }}
                                 />
-                                <div>
+                                <div className="actions">
                                     <Tooltip title="Rotate Left">
                                         <Button icon={<RotateLeftOutlined/>} onClick={() => {
                                             updateRotate(-90);
@@ -185,6 +190,10 @@ const Home = () => {
                                             onReset();
                                         }}/>
                                     </Tooltip>
+                                    <Button onClick={() => {
+                                        setFileSrc('');
+                                        setCroppedImage('');
+                                    }}>Upload new image</Button>
                                     <Button onClick={() => getCropData()}>Preview</Button>
                                     <Button onClick={() => publish()}>Publish</Button>
                                 </div>
@@ -195,15 +204,17 @@ const Home = () => {
                         <Col span={12}>
                             <Card
                                 hoverable
-                                style={{ marginLeft: 20, background: 'transparent', height: 'fit-content'  }}
-                                cover={<img alt="example" src={croppedImage} />}
+                                style={{ margin: '10px', background: 'transparent', height: 'auto', width: '90%'  }}
+                                cover={<img alt="example" src={croppedImage} style={{    margin: 'auto',width: '90%'}}/>}
                             >
-                                <Meta title="Preview"></Meta>
                             </Card>
                         </Col>
                     </Row>
                 )
             }
+            <DownloadModal fetchUrl={downloadImageUrl} handleCancel={() => {
+                setDownloadImageUrl('');
+            }}/>
         </div>
     );
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import logo from './logo.svg';
-import './App.css';
+import './App.scss';
 import CustomLayout from "./components/CustomLayout";
 
 function App() {

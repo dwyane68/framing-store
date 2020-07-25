@@ -1,6 +1,7 @@
 import React, { Component, useState, FunctionComponent, useEffect } from 'react';
 import { Modal, Button, Card, message } from 'antd';
-import {apiDownload} from '../../services'
+import {apiDownload} from '../../services';
+
 type DownloadProps = {
     fetchUrl: string,
     handleCancel: () => void
@@ -11,10 +12,9 @@ const DownloadModal : FunctionComponent<DownloadProps> = (props) => {
     const [visible, setVisible] = useState(false);
     const [fetchUrl, setFetchUrl] = useState('');
     
-
     useEffect(() => {
         if(props.fetchUrl != '') {
-            console.log(props.fetchUrl);
+          console.log(props.fetchUrl);
           setFetchUrl(props.fetchUrl);
           setVisible(true);
         }

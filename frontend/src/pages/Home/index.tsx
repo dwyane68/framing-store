@@ -62,7 +62,6 @@ const Home = () => {
     
     const cropperProps = { // make sure all required component's inputs/Props keys&types match
         src: fileSrc,
-        // style,
         initialAspectRatio: 4/4,
         rotatable: true,
         zoomTo: zoom,
@@ -103,7 +102,6 @@ const Home = () => {
         if(croppedImage === placeholder) {
             message.error("Please generate preview before publishing.")
         } else {
-            // console.log(croppedImage);
             message.loading("please wait while the image is being processed.", () => {
                 publishImage({
                     file: croppedImage
@@ -141,10 +139,10 @@ const Home = () => {
                         >
                         </Card>
                         <Upload beforeUpload={beforeUpload}>
-                        <Button>
-                            <UploadOutlined /> Click to Upload
-                        </Button>
-                    </Upload>
+                            <Button>
+                                <UploadOutlined /> Click to Upload
+                            </Button>
+                        </Upload>
                     </>
                     
                 )
@@ -205,7 +203,7 @@ const Home = () => {
                             <Card
                                 hoverable
                                 style={{ margin: '10px', background: 'transparent', height: 'auto', width: '90%'  }}
-                                cover={<img alt="example" src={croppedImage} style={{    margin: 'auto',width: '90%'}}/>}
+                                cover={<img alt="example" src={croppedImage} style={{margin: 'auto',width: '90%'}}/>}
                             >
                             </Card>
                         </Col>

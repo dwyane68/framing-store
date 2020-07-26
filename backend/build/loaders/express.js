@@ -17,6 +17,7 @@ exports.default = ({ app }) => {
         res.status(200).end();
     });
     app.get('/preview/:fileName', (req, res) => {
+        res.header("Access-Control-Allow-Origin", "*");
         const fileName = req.params.fileName;
         return res.sendFile(path_1.default.join(__dirname, '..', 'public', fileName));
     });

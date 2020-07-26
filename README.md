@@ -15,6 +15,7 @@ cd frontend
 npm install
 ```
 
+### Run App
 To start the backend run following command in your terminal:
 ```bash
 cd backend
@@ -26,6 +27,8 @@ To start the frontend run following command in your terminal:
 cd frontend
 npm run start
 ```
+
+### Build App
 
 To build the backend run following command in your terminal:
 ```bash

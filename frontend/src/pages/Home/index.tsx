@@ -27,7 +27,6 @@ let placeholder: any;
 placeholder = 'https://via.placeholder.com/500';
   
 const Home = () => {
-    const [data, setData] = useState(initialData);
     const [fileSrc, setFileSrc] = useState(tmpSrc);
     const [croppedImage, setCroppedImage] = useState(placeholder);
     const [rotate, setRotate] = useState(0);
@@ -113,18 +112,6 @@ const Home = () => {
             })
             
         }
-    }
-
-    const handleUpdate = () => {
-        setData({
-            x: 100,
-            y: 100,
-            width: 500,
-            height: 600,
-            rotate: rotate,
-            scaleX: 1,
-            scaleY: 1,
-        });
     }
 
     return (

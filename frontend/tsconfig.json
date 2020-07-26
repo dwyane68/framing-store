@@ -21,6 +21,6 @@
     "rootDirs": ["src", "stories"],
   },
   "include": [
-    "src"
+    "src", "src/__tests__"
   ]
 }
